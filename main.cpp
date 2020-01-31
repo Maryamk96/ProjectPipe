@@ -8,6 +8,8 @@
 #include "Pipe.h"
 #include "Menu.h"
 
+//******************************************************************
+
 using namespace std;
 
 array<array < Pipe*, 5>,5>pipewater;
@@ -16,7 +18,7 @@ void GameMenu();
 void Form();
 void About();
 
-
+//******************************************************************
 
 int main()
 {
@@ -24,13 +26,15 @@ int main()
         return 0;
 }
 
+//******************************************************************
+
 //menu start Program
 void GameMenu()
 {
 	////***sf::RenderWindow window(sf::VideoMode(550,600),"Pipe water");
-
+	//Create a new window
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(800,800), "waterPipe",sf::Style::Close);
+	window.create(sf::VideoMode(800,800), "waterPipe",sf::Style::Close); //size window
 	window.setKeyRepeatEnabled(false);
 	
 
@@ -40,6 +44,7 @@ void GameMenu()
 
 	sf::Texture texture;
 	sf::Sprite sprite;
+	//select image for background
 	if (!texture.loadFromFile("3.jpg"))
 	{
 		cout << "Error!!! can not load image!" << endl;
@@ -53,11 +58,12 @@ void GameMenu()
 	{
 		//sf::Event e;
 		sf::Event event;
+		//create menu
 		while (window.pollEvent(event))
 		{
 			//if (event.type == sf::Event::Closed)
 
-			switch (event.type)
+			switch (event.type)  // menu 
 			{
 			case  sf::Event::KeyReleased:
 				switch (event.key.code)
@@ -104,54 +110,80 @@ void GameMenu()
 	//	window.display();
 	//}
 }
-
+//******************************************************************
 void Form()
 {
-	
 
+	//create window game
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(800, 800), "waterPipe",sf::Style::Close);
+	window.create(sf::VideoMode(800, 800), "waterPipe", sf::Style::Close); //size window
 	window.setKeyRepeatEnabled(false);
-
+	//craete object for play music
 	sf::Music music;
+	//select music
 	if (!music.openFromFile("07 Walking on Air Crashing Waves.ogg"))
 	{
 		cout << "Error! can not play music" << endl;
 	}
-	music.play();
+	music.play(); //play music in form game
 	sf::Texture texture;
 	sf::Sprite sprite;
-	if (!texture.loadFromFile("BG3.jpg"))
+
+	//select image for background form game
+	if (!texture.loadFromFile("pic1.png"))
 	{
 		cout << "Error!!! can not load image!" << endl;
 	}
 	sprite.setTexture(texture);
-	sprite.setScale(sf::Vector2f(0.314, 0.32));
+	sprite.setScale(sf::Vector2f(1, 1.04));
 
-	string st[7]("l1.jpg", );
-	
+
+
 
 	while (window.isOpen())
 	{
 		sf::Event e;
 		while (window.pollEvent(e))
 		{
-			switch (e.type)
+			/*switch (e.type)
 			{
 			case sf::Event::Closed:
 					window.close();
 					break;
+			}*/
+
+			if (e.type == sf::Event::Closed)
+			{
+				window.close();
+				break;
 			}
+			//*******************************
+			if (e.type == sf::Event::MouseButtonPressed)
+			{
+				if (e.mouseButton.button == sf::Mouse::Left)
+				{
+					if ((e.mouseButton.x >= 21 && e.mouseButton.x <= 92) && (e.mouseButton.y >= 52 && e.mouseButton.y <= 55))
+					{
+						window.close();
+						music.pause();
+					}
+					else continue;
+				}
+			}
+			window.draw(sprite);
+			window.display();
 		}
-		window.draw(sprite);
-		window.display();
 	}
 }
 
+//******************************************************************
+
+//create form about
+//function
 void About()
 {
 	
-
+	//create new form 
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(800, 800), "waterPipe",sf::Style::Close);
 	window.setKeyRepeatEnabled(false);
@@ -159,12 +191,13 @@ void About()
 
 	sf::Texture texture;
 	sf::Sprite sprite;
+	//select image for background
 	if (!texture.loadFromFile("about.png"))
 	{
 		cout << "Error!!! can not load image!" << endl;
 	}
 	sprite.setTexture(texture);
-	sprite.setScale(sf::Vector2f(1.03 , 1.05));
+	sprite.setScale(sf::Vector2f(1.03 , 1.05)); //size pic
 
 	while (window.isOpen())
 	{
@@ -182,3 +215,5 @@ void About()
 		window.display();
 	}
 }
+
+//******************************************************************
