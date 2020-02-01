@@ -5,10 +5,9 @@
 
 class Btn 
 {
-
 public:
     Btn(float x, float y, float w, float h);
-    void events(sf::Vector2f mousePos);
+    void events(sf::Vector2f mousePos, sf::Event& event);
     virtual void render(sf::RenderTarget* target);
 
 protected:

@@ -4,12 +4,18 @@
 #include <string>
 #include "enum.h"
 
-class Game;
+class GameWindow;
 
-class Pipe
+class Pipe 
 {
-    friend class Game;
-
+    friend class GameWindow;
+protected:
+    bool hasWater = false;
+    int r = -1; // row
+    int c = -1; // column
+    std::vector<Direction> waters; // shows which direction has water
+    std::vector<Direction> connections; // shows which direction is connected to another pipe
+    const std::string name;
 public:
     Pipe(std::string name, int r, int c);
     virtual ~Pipe();
@@ -24,12 +30,4 @@ public:
     bool hasConnectionInDirection(Direction d);
     bool isNearToStart();
     bool isNearToEnd();
-
-protected:
-    bool hasWater;
-    int r; // row
-    int c; // column
-    std::vector<Direction> waters; // shows which direction has water
-    std::vector<Direction> connections; // shows which direction is connected to another pipe
-    const std::string name;
 };

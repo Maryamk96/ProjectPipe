@@ -7,26 +7,26 @@ AboutWindow::AboutWindow(sf::RenderWindow* window) : window(window)
     backBtn = new ImgBtn(10, 10, 75, 75, backImg);
 }
 
-void AboutWindow::backBtnEvents() 
+void AboutWindow::backBtnEvents(sf::Event& event)
 {
-    backBtn->events(mousePos);
+    backBtn->events(mousePos, event);
 }
 
-WindowType AboutWindow::events() 
+WindowType AboutWindow::events(sf::Event& event)
 {
     updateMousePos();
-    backBtnEvents();
+    backBtnEvents(event);
     if (backBtn->isClicked) return MENU_WINDOW;
     else return CURRENT_WINDOW;
 }
 
-void AboutWindow::render() 
+void AboutWindow::render()
 {
     window->draw(sprite);
     backBtn->render(window);
 }
 
-void AboutWindow::updateMousePos() 
+void AboutWindow::updateMousePos()
 {
     mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 }

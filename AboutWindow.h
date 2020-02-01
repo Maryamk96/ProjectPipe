@@ -11,9 +11,9 @@ class AboutWindow {
 
 public:
     explicit AboutWindow(sf::RenderWindow* window);
-    WindowType events();
+    WindowType events(sf::Event& event);
     void render();
-    void backBtnEvents();
+    void backBtnEvents(sf::Event& event);
     void updateMousePos();
 private:
     const std::string resDir = "res/";

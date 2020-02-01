@@ -6,15 +6,13 @@
 #include "TextBtn.h"
 #include "enum.h"
 
-class MenuWindow 
-{
+class MenuWindow {
 
 public:
     explicit MenuWindow(sf::RenderWindow* window);
     ~MenuWindow();
-    WindowType events();
+    WindowType events(sf::Event& event);
     void render();
-
 private:
     const std::string resDir = "res/";
     const std::string menuImg = "Menu.png";
@@ -27,8 +25,7 @@ private:
     TextBtn* exitBtn;
     TextBtn* aboutBtn;
     sf::Vector2f mousePos;
-
 private:
-    void btnEvents();
+    void btnEvents(sf::Event& event);
     void updateMousePos();
 };

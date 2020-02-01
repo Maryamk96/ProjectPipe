@@ -17,15 +17,15 @@ MenuWindow::~MenuWindow() {
     delete aboutBtn;
 }
 
-void MenuWindow::btnEvents() {
-    playBtn->events(mousePos);
-    exitBtn->events(mousePos);
-    aboutBtn->events(mousePos);
+void MenuWindow::btnEvents(sf::Event& event) {
+    playBtn->events(mousePos, event);
+    exitBtn->events(mousePos, event);
+    aboutBtn->events(mousePos, event);
 }
 
-WindowType MenuWindow::events() {
+WindowType MenuWindow::events(sf::Event& event) {
     updateMousePos();
-    btnEvents();
+    btnEvents(event);
     if (playBtn->isClicked) return GAME_WINDOW;
     else if (exitBtn->isClicked) return CLOSE_WINDOW;
     else if (aboutBtn->isClicked) return ABOUT_WINDOW;
