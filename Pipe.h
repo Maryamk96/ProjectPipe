@@ -1,24 +1,25 @@
 #pragma once
-#ifndef  PIPE_H
-#define PIPE_H
+
+#include <vector>
+#include <string>
+#include "enum.h"
+
+class Pipe {
 
 
-class Pipe
-{
 public:
-	Pipe();
-	virtual void setinput()=0;
-	virtual int getinput()=0;
-	virtual void setoutput() = 0;
-	virtual int getoutput() = 0;
+    Pipe(std::string name, int r, int c);
+    virtual bool hasDirection(Direction d) = 0;
+    virtual bool hasLeakage() = 0;
+    virtual PipeType getPipeType() = 0;
+    virtual bool addWaterFrom(Direction d) = 0;
+    void removeWater();
+    bool hasWaterInDirection(Direction d);
 
-	virtual ~Pipe();
-
-private:
-	int  input;
-	int output;
-	char type;
-	bool pipe;
+protected:
+    bool hasWater;
+    int r; // row
+    int c; // column
+    std::vector<Direction> waters; // shows which direction has water
+    const std::string name;
 };
-
-#endif // ! PIPE_H
