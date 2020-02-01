@@ -12,6 +12,7 @@ bool Row::hasLeakage()
     return !hasConnectionInDirection(LEFT) || !hasConnectionInDirection(RIGHT);
 }
 
-PipeType Row::getPipeType() {
+PipeType Row::getPipeType() 
+{
     return ROW;
 }

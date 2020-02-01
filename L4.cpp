@@ -7,12 +7,12 @@ bool L4::hasDirection(Direction d)
     return d == LEFT || d == UP;
 }
 
-bool L4::hasLeakage()
+bool L4::hasLeakage() 
 {
     return !hasConnectionInDirection(LEFT) || !hasConnectionInDirection(UP);
 }
 
-PipeType L4::getPipeType() 
+PipeType L4::getPipeType()
 {
     return PipeType::L4;
 }

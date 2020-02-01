@@ -3,7 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-class Btn {
+class Btn 
+{
 
 public:
     Btn(float x, float y, float w, float h);

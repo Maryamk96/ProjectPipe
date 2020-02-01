@@ -7,8 +7,7 @@
 #include "ImgBtn.h"
 #include "enum.h"
 
-class AboutWindow 
-{
+class AboutWindow {
 
 public:
     explicit AboutWindow(sf::RenderWindow* window);
@@ -16,7 +15,6 @@ public:
     void render();
     void backBtnEvents();
     void updateMousePos();
-
 private:
     const std::string resDir = "res/";
     const std::string aboutImg = "About.png";

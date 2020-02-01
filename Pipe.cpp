@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Pipe::Pipe(string name, int r, int c) : name(name), r(r), c(c)
+Pipe::Pipe(string name, int r, int c) : name(name), r(r), c(c) 
 {
     hasWater = false;
     r = 0;
@@ -11,34 +11,39 @@ Pipe::Pipe(string name, int r, int c) : name(name), r(r), c(c)
     connections = vector<Direction>(4, NONE); // ...
 }
 
-bool Pipe::addWaterFrom(Direction d) 
+Pipe::~Pipe() 
+{
+
+}
+
+bool Pipe::addWaterFrom(Direction d)
 {
     if (!hasConnectionInDirection(d)) return false;
-    else
+    else 
     {
         if (!hasWaterInDirection(d)) waters.push_back(d);
         return true;
     }
 }
 
-bool Pipe::addConnectionFrom(Direction d) 
+bool Pipe::addConnectionFrom(Direction d)
 {
     if (!hasDirection(d)) return false;
-    else {
+    else 
+    {
         if (!hasConnectionInDirection(d)) connections.push_back(d);
         return true;
     }
 }
 
-void Pipe::removeConnections() 
-{
-    for (int i = 0; i < connections.size(); i++)
+void Pipe::removeConnections() {
+    for (int i = 0; i < connections.size(); i++) 
     {
         connections[i] = NONE;
     }
 }
 
-void Pipe::removeWaters()
+void Pipe::removeWaters() 
 {
     hasWater = false;
     for (int i = 0; i < waters.size(); i++)

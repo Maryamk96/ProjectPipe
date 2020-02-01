@@ -1,27 +1,32 @@
 #include "AboutWindow.h"
 
-AboutWindow::AboutWindow(sf::RenderWindow* window) : window(window) {
+AboutWindow::AboutWindow(sf::RenderWindow* window) : window(window) 
+{
     texture.loadFromFile(resDir + aboutImg);
     sprite.setTexture(texture);
     backBtn = new ImgBtn(10, 10, 75, 75, backImg);
 }
 
-void AboutWindow::backBtnEvents() {
+void AboutWindow::backBtnEvents() 
+{
     backBtn->events(mousePos);
 }
 
-WindowType AboutWindow::events() {
+WindowType AboutWindow::events() 
+{
     updateMousePos();
     backBtnEvents();
     if (backBtn->isClicked) return MENU_WINDOW;
     else return CURRENT_WINDOW;
 }
 
-void AboutWindow::render() {
+void AboutWindow::render() 
+{
     window->draw(sprite);
     backBtn->render(window);
 }
 
-void AboutWindow::updateMousePos() {
+void AboutWindow::updateMousePos() 
+{
     mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 }

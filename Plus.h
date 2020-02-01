@@ -2,7 +2,8 @@
 
 #include "Pipe.h"
 
-class Plus : public Pipe {
+class Plus : public Pipe
+{
 public:
     Plus(int r, int c);
     bool hasDirection(Direction d) override;
