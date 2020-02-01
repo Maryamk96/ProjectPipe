@@ -29,7 +29,7 @@ Game::~Game()
     delete window;
 }
 
-void Game::start() 
+void Game::start()
 {
     while (window->isOpen())
     {
@@ -45,7 +45,7 @@ void Game::events()
         if (event.type == sf::Event::Closed) window->close();
     }
     WindowType win;
-    switch (currentWindow)
+    switch (currentWindow) 
     {
     case MENU_WINDOW:
         win = menuWindow->events();
@@ -63,7 +63,7 @@ void Game::events()
     if (win != CURRENT_WINDOW) currentWindow = win;
 }
 
-void Game::render() 
+void Game::render()
 {
     window->clear();
     ///
@@ -103,7 +103,8 @@ Pipe* Game::customPipeAt(sf::Vector2i index, PipeType t)
     int y = index.y;
     int x = index.x;
     Pipe* pipe = NULL;
-    switch (t)
+    if (!isValid(y, x)) return pipe;
+    switch (t) 
     {
     case ROW:
         pipe = new class::Row(y, x);
@@ -132,7 +133,7 @@ Pipe* Game::customPipeAt(sf::Vector2i index, PipeType t)
     return pipe;
 }
 
-Pipe* Game::randomPipeAt(sf::Vector2i index) 
+Pipe* Game::randomPipeAt(sf::Vector2i index)
 {
     int randNum = (rand() % 7);
     return customPipeAt(index, (PipeType)randNum);
@@ -141,23 +142,26 @@ Pipe* Game::randomPipeAt(sf::Vector2i index)
 void Game::randomPipes()
 {
     bool found = false;
-    while (!found) {
+    while (!found)
+    {
         removePipes();
-        for (int y = 0; y < 5; y++)
+        for (int y = 0; y < 5; y++) 
         {
             for (int x = 0; x < 5; x++)
             {
                 pipes[y][x] = randomPipeAt(sf::Vector2i(x, y));
+                updateConnectionsOf(pipes[y][x]);
             }
         }
         for (int y = 0; y < 5 && !found; y++) 
         {
             for (int x = 0; x < 5 && !found; x++)
             {
-                for (int t = 0; t < 7 && !found; t++)
+                for (int t = 0; t < 7 && !found; t++) 
                 {
                     delete pipes[y][x];
                     pipes[y][x] = customPipeAt(sf::Vector2i(x, y), (PipeType)t);
+                    updateConnectionsOf(pipes[y][x]);
                     if (moveWaterToEnd()) found = true;
                 }
             }
@@ -166,22 +170,11 @@ void Game::randomPipes()
     randomizePipes();
 }
 
-void Game::resetPipes() 
-{
-    for (int y = 0; y < 5; y++)
-    {
-        for (int x = 0; x < 5; x++)
-        {
-            pipes[y][x] = NULL;
-        }
-    }
-}
-
 void Game::removePipes()
 {
-    for (int y = 0; y < 5; y++)
+    for (int y = 0; y < 5; y++) 
     {
-        for (int x = 0; x < 5; x++) 
+        for (int x = 0; x < 5; x++)
         {
             delete pipes[y][x];
             pipes[y][x] = NULL;
@@ -189,12 +182,12 @@ void Game::removePipes()
     }
 }
 
-void Game::randomizePipes()
+void Game::randomizePipes() 
 {
     int y1, x1;
     for (int y = 0; y < 5; y++) 
     {
-        for (int x = 0; x < 5; x++)
+        for (int x = 0; x < 5; x++) 
         {
             y1 = rand() % 5;
             x1 = rand() % 5;
@@ -203,7 +196,7 @@ void Game::randomizePipes()
     }
 }
 
-sf::Vector2i Game::upIndexOf(sf::Vector2i index) 
+sf::Vector2i Game::upIndexOf(sf::Vector2i index)
 {
     return sf::Vector2i(index.x, index.y - 1);
 }
@@ -218,7 +211,7 @@ sf::Vector2i Game::downIndexOf(sf::Vector2i index)
     return sf::Vector2i(index.x, index.y + 1);
 }
 
-sf::Vector2i Game::leftIndexOf(sf::Vector2i index) 
+sf::Vector2i Game::leftIndexOf(sf::Vector2i index)
 {
     return sf::Vector2i(index.x - 1, index.y);
 }
@@ -230,7 +223,7 @@ Pipe* Game::upPipeOf(Pipe* pipe)
     return pipes[upIndex.y][upIndex.x];
 }
 
-Pipe* Game::rightPipeOf(Pipe* pipe)
+Pipe* Game::rightPipeOf(Pipe* pipe) 
 {
     sf::Vector2i index(pipe->c, pipe->r);
     sf::Vector2i rightIndex = rightIndexOf(index);
@@ -244,7 +237,7 @@ Pipe* Game::downPipeOf(Pipe* pipe)
     return pipes[downIndex.y][downIndex.x];
 }
 
-Pipe* Game::leftPipeOf(Pipe* pipe) 
+Pipe* Game::leftPipeOf(Pipe* pipe)
 {
     sf::Vector2i index(pipe->c, pipe->r);
     sf::Vector2i leftIndex = leftIndexOf(index);
@@ -253,15 +246,88 @@ Pipe* Game::leftPipeOf(Pipe* pipe)
 
 void Game::updateConnectionsOf(Pipe* pipe)
 {
-
+    pipe->removeConnections();
+    pipe->removeWaters();
+    if (pipe->isNearToStart() && pipe->hasDirection(UP)) pipe->addConnectionFrom(UP);
+    if (pipe->isNearToEnd() && pipe->hasDirection(RIGHT)) pipe->addConnectionFrom(RIGHT);
+    Pipe* up = upPipeOf(pipe);
+    Pipe* right = rightPipeOf(pipe);
+    Pipe* down = downPipeOf(pipe);
+    Pipe* left = leftPipeOf(pipe);
+    if (pipe->hasDirection(UP) && up->hasDirection(DOWN)) 
+    {
+        pipe->addConnectionFrom(UP);
+        up->addConnectionFrom(DOWN);
+    }
+    if (pipe->hasDirection(RIGHT) && right->hasDirection(LEFT))
+    {
+        pipe->addConnectionFrom(RIGHT);
+        up->addConnectionFrom(LEFT);
+    }
+    if (pipe->hasDirection(DOWN) && down->hasDirection(UP))
+    {
+        pipe->addConnectionFrom(DOWN);
+        up->addConnectionFrom(UP);
+    }
+    if (pipe->hasDirection(LEFT) && left->hasDirection(RIGHT)) 
+    {
+        pipe->addConnectionFrom(LEFT);
+        up->addConnectionFrom(RIGHT);
+    }
 }
 
-bool Game::moveWaterToEnd() 
+bool Game::isConnectedFromDirection(Direction d, Pipe* p1, Pipe* p2)
 {
-
+    Direction dComplement = NONE;
+    if (d == UP) dComplement = DOWN;
+    if (d == DOWN) dComplement = UP;
+    if (d == LEFT) dComplement = RIGHT;
+    if (d == RIGHT) dComplement = LEFT;
+    return p1->hasConnectionInDirection(d) && p2->hasConnectionInDirection(dComplement);
 }
 
 void Game::changePlace(Pipe* p1, Pipe* p2)
 {
+    int r1 = p1->r;
+    int c1 = p1->c;
+    int r2 = p2->r;
+    int c2 = p2->c;
+    pipes[r1][c1] = p2;
+    pipes[r2][c2] = p1;
+    p2->c = c1;
+    p2->r = r1;
+    p1->c = c2;
+    p1->r = r2;
+}
 
+bool Game::moveWaterToEnd()
+{
+    for (int y = 0; y < 5; y++)
+    {
+        for (int x = 0; x < 5; x++) 
+        {
+            pipes[y][x]->removeWaters();
+        }
+    }
+    score = 0;
+    return recursiveMove(pipes[1][1], UP);
+}
+
+bool Game::recursiveMove(Pipe* p, Direction from) 
+{
+    if (p == NULL) return false;
+    if (p->isNearToStart() && !p->hasDirection(UP)) return false;
+    if (p->isNearToEnd() && p->hasDirection(RIGHT)) return true;
+    p->addWaterFrom(from);
+    score++;
+    if (p->hasLeakage()) return false;
+    Pipe* up = upPipeOf(p);
+    Pipe* right = rightPipeOf(p);
+    Pipe* down = downPipeOf(p);
+    Pipe* left = leftPipeOf(p);
+    if (isConnectedFromDirection(UP, p, up) && recursiveMove(up, DOWN)) return true;
+    if (isConnectedFromDirection(RIGHT, p, right) && recursiveMove(right, LEFT)) return true;
+    if (isConnectedFromDirection(DOWN, p, down) && recursiveMove(down, UP)) return true;
+    if (isConnectedFromDirection(LEFT, p, left) && recursiveMove(left, RIGHT)) return true;
+    return false;
 }

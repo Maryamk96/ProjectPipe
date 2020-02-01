@@ -9,8 +9,8 @@
 #include "enum.h"
 #include "Pipe.h"
 
-class Game {
-
+class Game
+{
 public:
     Game();
     ~Game();
@@ -18,14 +18,13 @@ public:
     void events();
     void render();
     void renderWindows();
-
-//**************************
+   
+    //**************************
 
     bool isValid(int row, int col);
     Pipe* customPipeAt(sf::Vector2i index, PipeType t);
     Pipe* randomPipeAt(sf::Vector2i index);
     void randomPipes();
-    void resetPipes();
     void removePipes();
     void randomizePipes();
     sf::Vector2i upIndexOf(sf::Vector2i index);
@@ -37,8 +36,10 @@ public:
     Pipe* downPipeOf(Pipe* pipe);
     Pipe* leftPipeOf(Pipe* pipe);
     void updateConnectionsOf(Pipe* pipe);
-    bool moveWaterToEnd(); // if player wins returns true
+    bool isConnectedFromDirection(Direction d, Pipe* p1, Pipe* p2);
     void changePlace(Pipe* p1, Pipe* p2);
+    bool moveWaterToEnd(); // if player wins returns true
+    bool recursiveMove(Pipe* p, Direction from);
 
     //*******************************
 private:
@@ -53,10 +54,9 @@ private:
     GameWindow* gameWindow;
     AboutWindow* aboutWindow;
 
-//******************************
+    //******************************
     int score;
     Pipe* first;
     Pipe* second;
     Pipe* pipes[5][5];
-
 };

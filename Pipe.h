@@ -6,7 +6,8 @@
 
 class Game;
 
-class Pipe {
+class Pipe
+{
     friend class Game;
 
 public:
@@ -21,6 +22,8 @@ public:
     void removeWaters();
     bool hasWaterInDirection(Direction d);
     bool hasConnectionInDirection(Direction d);
+    bool isNearToStart();
+    bool isNearToEnd();
 
 protected:
     bool hasWater;
