@@ -1,6 +1,7 @@
 #include "Game.h"
 
-Game::Game() {
+Game::Game()
+{
     window = new sf::RenderWindow(sf::VideoMode(windowW, windowH), gameName);
     event = sf::Event();
     currentWindow = MENU_WINDOW;
@@ -9,7 +10,8 @@ Game::Game() {
     aboutWindow = new AboutWindow(window);
 }
 
-Game::~Game() {
+Game::~Game() 
+{
     delete menuWindow;
     delete gameWindow;
     delete aboutWindow;
@@ -17,14 +19,16 @@ Game::~Game() {
 }
 
 void Game::start() {
-    while (window->isOpen()) {
+    while (window->isOpen())
+    {
         events();
         render();
     }
 }
 
 void Game::events() {
-    while (window->pollEvent(event)) {
+    while (window->pollEvent(event))
+    {
         if (event.type == sf::Event::Closed) window->close();
     }
     WindowType win;
@@ -53,8 +57,10 @@ void Game::render() {
     window->display();
 }
 
-void Game::renderWindows() {
-    switch (currentWindow) {
+void Game::renderWindows()
+{
+    switch (currentWindow)
+    {
     case MENU_WINDOW:
         menuWindow->render();
         break;
