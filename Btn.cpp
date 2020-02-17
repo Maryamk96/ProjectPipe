@@ -7,12 +7,13 @@ Btn::Btn(float x, float y, float w, float h) {
     shape.setSize(sf::Vector2f(w, h));
 }
 
-void Btn::events(sf::Vector2f mousePos, sf::Event& event) {
+void Btn::events(sf::Vector2f mousePos) {
     isClicked = false;
+    isHovered = false;
     if (shape.getGlobalBounds().contains(mousePos)) {
-        if (event.type == sf::Event::MouseButtonPressed) {
+        isHovered = true;
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
             isClicked = true;
-            
         }
     }
 }

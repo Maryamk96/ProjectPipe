@@ -16,3 +16,9 @@ PipeType L1::getPipeType()
 {
     return PipeType::L1;
 }
+
+bool L1::canMoveWaterTo(Direction d) 
+{
+    if (d == UP) return hasWaterInDirection(RIGHT);
+    else return hasWaterInDirection(UP);
+}

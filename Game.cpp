@@ -4,6 +4,8 @@ using namespace std;
 
 Game::Game() {
     window = new sf::RenderWindow(sf::VideoMode(windowW, windowH), gameName);
+    window->setKeyRepeatEnabled(false);
+    window->setVerticalSyncEnabled(true);
     event = sf::Event();
     currentWindow = MENU_WINDOW;
     menuWindow = new MenuWindow(window);
@@ -28,23 +30,25 @@ void Game::start() {
 void Game::events() {
     while (window->pollEvent(event)) {
         if (event.type == sf::Event::Closed) window->close();
+        else {
+            WindowType win;
+            switch (currentWindow) {
+            case MENU_WINDOW:
+                win = menuWindow->events();
+                break;
+            case GAME_WINDOW:
+                win = gameWindow->events();
+                break;
+            case ABOUT_WINDOW:
+                win = aboutWindow->events();
+                break;
+            default:
+                win = CURRENT_WINDOW;
+                break;
+            }
+            if (win != CURRENT_WINDOW) currentWindow = win;
+        }
     }
-    WindowType win;
-    switch (currentWindow) {
-    case MENU_WINDOW:
-        win = menuWindow->events(event);
-        break;
-    case GAME_WINDOW:
-        win = gameWindow->events(event);
-        break;
-    case ABOUT_WINDOW:
-        win = aboutWindow->events(event);
-        break;
-    default:
-        win = CURRENT_WINDOW;
-        break;
-    }
-    if (win != CURRENT_WINDOW) currentWindow = win;
 }
 
 void Game::render() {

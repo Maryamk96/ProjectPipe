@@ -17,7 +17,8 @@ TextBtn::TextBtn(float x, float y, sf::Color color, string txt, string fontName)
     shape.setFillColor(sf::Color::Transparent);
 }
 
-void TextBtn::render(sf::RenderTarget* target) {
+void TextBtn::render(sf::RenderTarget* target)
+{
     Btn::render(target);
     target->draw(text);
 }

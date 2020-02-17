@@ -4,7 +4,7 @@ using namespace std;
 
 Pipe::Pipe(string name, int r, int c) : name(name), r(r), c(c) {}
 
-Pipe::~Pipe() 
+Pipe::~Pipe()
 {
 
 }
@@ -41,7 +41,7 @@ void Pipe::removeWaters()
 
 bool Pipe::hasWaterInDirection(Direction d)
 {
-    for (auto water : waters)
+    for (auto water : waters) 
     {
         if (water == d) return true;
     }
@@ -50,19 +50,19 @@ bool Pipe::hasWaterInDirection(Direction d)
 
 bool Pipe::hasConnectionInDirection(Direction d)
 {
-    for (auto connection : connections)
+    for (auto connection : connections) 
     {
         if (connection == d) return true;
     }
     return false;
 }
 
-bool Pipe::isNearToStart() 
+bool Pipe::isNearToStart()
 {
-    return r == 1 && c == 1;
+    return r == 0 && c == 0;
 }
 
-bool Pipe::isNearToEnd() 
+bool Pipe::isNearToEnd()
 {
     return r == 4 && c == 4;
 }

@@ -1,5 +1,6 @@
 #include "MenuWindow.h"
 
+
 MenuWindow::MenuWindow(sf::RenderWindow* window) : window(window) {
     int d = 150;
     int x = (window->getSize().x - TextBtn::textW) / 2;
@@ -17,15 +18,15 @@ MenuWindow::~MenuWindow() {
     delete aboutBtn;
 }
 
-void MenuWindow::btnEvents(sf::Event& event) {
-    playBtn->events(mousePos, event);
-    exitBtn->events(mousePos, event);
-    aboutBtn->events(mousePos, event);
+void MenuWindow::btnEvents() {
+    playBtn->events(mousePos);
+    exitBtn->events(mousePos);
+    aboutBtn->events(mousePos);
 }
 
-WindowType MenuWindow::events(sf::Event& event) {
+WindowType MenuWindow::events() {
     updateMousePos();
-    btnEvents(event);
+    btnEvents();
     if (playBtn->isClicked) return GAME_WINDOW;
     else if (exitBtn->isClicked) return CLOSE_WINDOW;
     else if (aboutBtn->isClicked) return ABOUT_WINDOW;

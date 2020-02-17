@@ -22,6 +22,7 @@ public:
     virtual bool hasDirection(Direction d) = 0;
     virtual bool hasLeakage() = 0;
     virtual PipeType getPipeType() = 0;
+    virtual bool canMoveWaterTo(Direction d) = 0;
     bool addWaterFrom(Direction d);
     bool addConnectionFrom(Direction d);
     void removeConnections();

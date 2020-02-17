@@ -29,4 +29,3 @@ private:
     GameWindow* gameWindow;
     AboutWindow* aboutWindow;
 };
-

@@ -16,34 +16,29 @@ GameWindow::GameWindow(sf::RenderWindow* window) : window(window) {
     texture.loadFromFile(resDir + gameImg);
     sprite.setTexture(texture);
     backBtn = new ImgBtn(10, 10, 75, 75, backImg);
+    scoreText = new TextBtn(350, 20, sf::Color::Black, "", mainFont);
     music.openFromFile(resDir + mainMusic);
     music.setLoop(true);
     music.play();
-    score = 0;
-    first = nullptr;
-    second = nullptr;
-    for (int y = 0; y < 5; y++) {
-        for (int x = 0; x < 5; x++) {
-            pipes[y][x] = nullptr;
-        }
-    }
+    srand((unsigned)time(0));
     randomPipes();
-    initPipeBtns();
+    setupPipeBtns();
 }
 
 GameWindow::~GameWindow() {
     delete backBtn;
+    delete scoreText;
 }
 
-void GameWindow::backBtnEvents(sf::Event& event) {
-    backBtn->events(mousePos, event);
+void GameWindow::backBtnEvents() {
+    backBtn->events(mousePos);
 }
 
-WindowType GameWindow::events(sf::Event& event) {
+WindowType GameWindow::events() {
     updateMousePos();
-    backBtnEvents(event);
+    backBtnEvents();
     if (backBtn->isClicked) return MENU_WINDOW;
-    eventsPipeBtns(event);
+    eventsPipeBtns();
     return CURRENT_WINDOW;
 }
 
@@ -51,13 +46,14 @@ void GameWindow::render() {
     window->draw(sprite);
     backBtn->render(window);
     renderPipeBtns();
+    renderScoreText();
 }
 
 void GameWindow::updateMousePos() {
     mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 }
 
-void GameWindow::initPipeBtns() {
+void GameWindow::setupPipeBtns() {
     for (int y = 0; y < 5; y++) {
         for (int x = 0; x < 5; x++) {
             delete pipeBtns[y][x];
@@ -70,7 +66,10 @@ void GameWindow::initPipeBtns() {
     int h = 106;
     for (int y = 0; y < 5; y++) {
         for (int x = 0; x < 5; x++) {
-            pipeBtns[y][x] = new ImgBtn(left, top, w, h, pipes[y][x]->name + ".png");
+            string imgStr = pipes[y][x]->name;
+            imgStr += pipes[y][x]->hasWater ? "-w" : "";
+            imgStr += ".png";
+            pipeBtns[y][x] = new ImgBtn(left, top, w, h, imgStr);
             left += w;
         }
         top += h;
@@ -78,22 +77,20 @@ void GameWindow::initPipeBtns() {
     }
 }
 
-void GameWindow::eventsPipeBtns(sf::Event& event) {
+void GameWindow::eventsPipeBtns() {
     for (int y = 0; y < 5; y++) {
         for (int x = 0; x < 5; x++) {
-            pipeBtns[y][x]->events(mousePos, event);
+            pipeBtns[y][x]->events(mousePos);
             if (pipeBtns[y][x]->isClicked) {
-                Pipe* p = pipes[y][x];
-                if (!first) {
-                    first = p;
-                }
-                else if (p->r != first->r && p->c != first->c) {
-                    second = p;
-                    changePlace(first, second);
-                    initPipeBtns();
-                    first = nullptr;
-                    second = nullptr;
-                }
+                rotatePipe(pipes[y][x]);
+                moveWaterToEnd();
+                setupPipeBtns();
+            }
+            else if (pipeBtns[y][x]->isHovered) {
+                pipeBtns[y][x]->shape.setFillColor(sf::Color(0xDEDAD1FF));
+            }
+            else {
+                pipeBtns[y][x]->shape.setFillColor(backBtn->shape.getFillColor()); // just reset it.
             }
         }
     }
@@ -105,6 +102,14 @@ void GameWindow::renderPipeBtns() {
             pipeBtns[y][x]->render(window);
         }
     }
+}
+
+void GameWindow::renderScoreText() {
+    if (hasWon) scoreText->text.setString("A Win With" + to_string(score));
+    else scoreText->text.setString(to_string(score));
+    int x = (window->getSize().x - scoreText->text.getGlobalBounds().width) / 2;
+    scoreText->text.setPosition(x, 20);
+    scoreText->render(window);
 }
 
 bool GameWindow::isValid(int row, int col) {
@@ -150,13 +155,23 @@ Pipe* GameWindow::randomPipeAt(sf::Vector2i index) {
 }
 
 void GameWindow::randomPipes() {
-    for (int y = 0; y < 5; y++) {
-        for (int x = 0; x < 5; x++) {
-            pipes[y][x] = randomPipeAt(sf::Vector2i(x, y));
-            updateConnectionsOf(pipes[y][x]);
+    bool found = false;
+    while (!found) {
+        removePipes();
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
+                pipes[y][x] = randomPipeAt(sf::Vector2i(x, y));
+            }
         }
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
+                updateConnectionsOf(pipes[y][x]);
+            }
+        }
+        if (moveWaterToEnd()) found = true;
     }
-    //    randomizePipes();
+    randomizePipes();
+    moveWaterToEnd();
 }
 
 void GameWindow::removePipes() {
@@ -239,12 +254,11 @@ void GameWindow::updateConnectionsOf(Pipe* pipe) {
 
 bool GameWindow::isConnectedFromDirection(Direction d, Pipe* p1, Pipe* p2) {
     if (!p1 || !p2) return false;
-    Direction dComplement = NONE;
-    if (d == UP) dComplement = DOWN;
-    if (d == DOWN) dComplement = UP;
-    if (d == LEFT) dComplement = RIGHT;
-    if (d == RIGHT) dComplement = LEFT;
-    return p1->hasConnectionInDirection(d) && p2->hasConnectionInDirection(dComplement);
+    if (d == UP && p1->hasConnectionInDirection(UP) && p2->hasConnectionInDirection(DOWN)) return true;
+    else if (d == RIGHT && p1->hasConnectionInDirection(RIGHT) && p2->hasConnectionInDirection(LEFT)) return true;
+    else if (d == DOWN && p1->hasConnectionInDirection(DOWN) && p2->hasConnectionInDirection(UP)) return true;
+    else if (d == LEFT && p1->hasConnectionInDirection(LEFT) && p2->hasConnectionInDirection(RIGHT)) return true;
+    else return false;
 }
 
 void GameWindow::changePlace(Pipe* p1, Pipe* p2) {
@@ -264,20 +278,20 @@ void GameWindow::changePlace(Pipe* p1, Pipe* p2) {
 }
 
 bool GameWindow::recursiveMove(Pipe* p, Direction from) {
-    if (!p) return false;
+    if (!p || p->hasWaterInDirection(from)) return false;
     if (p->isNearToStart() && !p->hasDirection(UP)) return false;
-    if (p->isNearToEnd() && p->hasDirection(RIGHT)) return true;
     p->addWaterFrom(from);
     score = score + 100;
+    if (p->isNearToEnd() && p->hasDirection(RIGHT)) return true;
     if (p->hasLeakage()) return false;
     Pipe* up = upPipeOf(p);
     Pipe* right = rightPipeOf(p);
     Pipe* down = downPipeOf(p);
     Pipe* left = leftPipeOf(p);
-    if (from != UP && isConnectedFromDirection(UP, p, up) && recursiveMove(up, DOWN)) return true;
-    if (from != RIGHT && isConnectedFromDirection(RIGHT, p, right) && recursiveMove(right, LEFT)) return true;
-    if (from != DOWN && isConnectedFromDirection(DOWN, p, down) && recursiveMove(down, UP)) return true;
-    if (from != LEFT && isConnectedFromDirection(LEFT, p, left) && recursiveMove(left, RIGHT)) return true;
+    if (p->canMoveWaterTo(UP) && isConnectedFromDirection(UP, p, up) && recursiveMove(up, DOWN)) return true;
+    if (p->canMoveWaterTo(RIGHT) && isConnectedFromDirection(RIGHT, p, right) && recursiveMove(right, LEFT)) return true;
+    if (p->canMoveWaterTo(DOWN) && isConnectedFromDirection(DOWN, p, down) && recursiveMove(down, UP)) return true;
+    if (p->canMoveWaterTo(LEFT) && isConnectedFromDirection(LEFT, p, left) && recursiveMove(left, RIGHT)) return true;
     return false;
 }
 
@@ -288,5 +302,42 @@ bool GameWindow::moveWaterToEnd() {
         }
     }
     score = 0;
-    return recursiveMove(pipes[1][1], UP);
+    hasWon = recursiveMove(pipes[0][0], UP);
+    return hasWon;
+}
+
+void GameWindow::rotatePipe(Pipe* p) {
+    PipeType t = p->getPipeType();
+    PipeType newT;
+    switch (t) {
+    case ROW:
+        newT = COLUMN;
+        break;
+    case COLUMN:
+        newT = ROW;
+        break;
+    case PLUS:
+        newT = PLUS;
+        break;
+    case L1:
+        newT = L2;
+        break;
+    case L2:
+        newT = L3;
+        break;
+    case L3:
+        newT = L4;
+        break;
+    case L4:
+        newT = L1;
+        break;
+    default:
+        newT = ROW;
+        break;
+    }
+    int r = p->r;
+    int c = p->c;
+    delete p;
+    pipes[r][c] = customPipeAt(sf::Vector2i(c, r), newT);
+    updateConnectionsOf(pipes[r][c]);
 }

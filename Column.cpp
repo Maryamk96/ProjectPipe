@@ -12,7 +12,13 @@ bool Column::hasLeakage()
     return !hasConnectionInDirection(DOWN) || !hasConnectionInDirection(UP);
 }
 
-PipeType Column::getPipeType() 
+PipeType Column::getPipeType()
 {
     return COLUMN;
+}
+
+bool Column::canMoveWaterTo(Direction d)
+{
+    if (d == UP) return hasWaterInDirection(DOWN);
+    else return hasWaterInDirection(UP);
 }

@@ -7,19 +7,21 @@
 #include "ImgBtn.h"
 #include "enum.h"
 #include "Pipe.h"
+#include "TextBtn.h"
 
 class GameWindow {
 
 public:
     explicit GameWindow(sf::RenderWindow* window);
     ~GameWindow();
-    WindowType events(sf::Event& event);
+    WindowType events();
     void render();
-    void backBtnEvents(sf::Event& event);
+    void backBtnEvents();
     void updateMousePos();
-    void initPipeBtns();
-    void eventsPipeBtns(sf::Event& event);
+    void setupPipeBtns();
+    void eventsPipeBtns();
     void renderPipeBtns();
+    void renderScoreText();
     //
     bool isValid(int row, int col);
     Pipe* customPipeAt(sf::Vector2i index, PipeType t);
@@ -36,24 +38,24 @@ public:
     void changePlace(Pipe* p1, Pipe* p2);
     bool recursiveMove(Pipe* p, Direction from);
     bool moveWaterToEnd(); // if player wins returns true
-
+    void rotatePipe(Pipe* p);
 private:
     const std::string resDir = "res/";
     const std::string gameImg = "Game.png";
     const std::string backImg = "Back.png";
+    const std::string mainFont = "Main.ttf";
     const std::string mainMusic = "Main.ogg";
 //
     sf::RenderWindow* window;
-    sf::Texture texture = sf::Texture();
-    sf::Sprite sprite = sf::Sprite();
+    sf::Texture texture;
+    sf::Sprite sprite;
     ImgBtn* backBtn;
     sf::Vector2f mousePos;
     sf::Music music;
+    TextBtn* scoreText;
     ImgBtn* pipeBtns[5][5] = { {nullptr} };
 //
-    int score;
-    Pipe* first;
-    Pipe* second;
-    Pipe* pipes[5][5] = { {nullptr} };
-
+    int score = 0;
+    bool hasWon = false;
+    Pipe* pipes[5][5] = { {nullptr} };  
 };

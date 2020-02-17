@@ -9,4 +9,5 @@ public:
     bool hasDirection(Direction d) override;
     bool hasLeakage() override;
     PipeType getPipeType() override;
+    bool canMoveWaterTo(Direction d) override;
 };

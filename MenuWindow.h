@@ -11,7 +11,7 @@ class MenuWindow {
 public:
     explicit MenuWindow(sf::RenderWindow* window);
     ~MenuWindow();
-    WindowType events(sf::Event& event);
+    WindowType events();
     void render();
 private:
     const std::string resDir = "res/";
@@ -26,6 +26,6 @@ private:
     TextBtn* aboutBtn;
     sf::Vector2f mousePos;
 private:
-    void btnEvents(sf::Event& event);
+    void btnEvents();
     void updateMousePos();
 };

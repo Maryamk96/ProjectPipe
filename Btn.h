@@ -7,11 +7,12 @@ class Btn
 {
 public:
     Btn(float x, float y, float w, float h);
-    void events(sf::Vector2f mousePos, sf::Event& event);
+    void events(sf::Vector2f mousePos);
     virtual void render(sf::RenderTarget* target);
 
 protected:
     const std::string resDir = "res/";
     bool isClicked = false;
+    bool isHovered = false;
     sf::RectangleShape shape;
 };
