@@ -8,7 +8,9 @@
 #include "Plus.h"
 #include <stdlib.h>
 #include <vector>
+#include <fstream>
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
@@ -17,12 +19,14 @@ GameWindow::GameWindow(sf::RenderWindow* window) : window(window) {
     sprite.setTexture(texture);
     backBtn = new ImgBtn(10, 10, 75, 75, backImg);
     scoreText = new TextBtn(350, 20, sf::Color::Black, "", mainFont);
+    saveBtn = new TextBtn(20, 730, sf::Color::Black, "Save", mainFont, 35);
+    randomizeBtn = new TextBtn(300, 730, sf::Color::Black, "Randomize", mainFont, 35);
+    loadBtn = new TextBtn(670, 730, sf::Color::Black, "Load", mainFont, 35);
     music.openFromFile(resDir + mainMusic);
     music.setLoop(true);
     music.play();
     srand((unsigned)time(0));
-    randomPipes();
-    setupPipeBtns();
+    if (!loadGame()) randomizeGame();
 }
 
 GameWindow::~GameWindow() {
@@ -30,22 +34,31 @@ GameWindow::~GameWindow() {
     delete scoreText;
 }
 
-void GameWindow::backBtnEvents() {
+WindowType GameWindow::btnEvents() {
     backBtn->events(mousePos);
+    saveBtn->events(mousePos);
+    randomizeBtn->events(mousePos);
+    loadBtn->events(mousePos);
+    if (saveBtn->isClicked) saveGame();
+    if (randomizeBtn->isClicked) randomizeGame();
+    if (loadBtn->isClicked) loadGame();
+    if (backBtn->isClicked) return MENU_WINDOW;
+    else return CURRENT_WINDOW;
 }
 
 WindowType GameWindow::events() {
     updateMousePos();
-    backBtnEvents();
-    if (backBtn->isClicked) return MENU_WINDOW;
     eventsPipeBtns();
-    return CURRENT_WINDOW;
+    return btnEvents();
 }
 
 void GameWindow::render() {
     window->draw(sprite);
-    backBtn->render(window);
     renderPipeBtns();
+    backBtn->render(window);
+    saveBtn->render(window);
+    randomizeBtn->render(window);
+    loadBtn->render(window);
     renderScoreText();
 }
 
@@ -340,4 +353,54 @@ void GameWindow::rotatePipe(Pipe* p) {
     delete p;
     pipes[r][c] = customPipeAt(sf::Vector2i(c, r), newT);
     updateConnectionsOf(pipes[r][c]);
+}
+
+PipeType GameWindow::pipeTypeFromChars(char chars[10]) {
+    string name(chars);
+    if (name == "Row") return ROW;
+    else if (name == "Column") return COLUMN;
+    else if (name == "Plus") return PLUS;
+    else if (name == "L1") return L1;
+    else if (name == "L2") return L2;
+    else if (name == "L3") return L3;
+    else if (name == "L4") return L4;
+    else return ROW;
+}
+
+bool GameWindow::saveGame() {
+    ofstream ofs("Game.dat", ios::out | ios::binary);
+    if (!ofs) return false;
+    for (int y = 0; y < 5; y++) {
+        for (int x = 0; x < 5; x++) {
+            char nameChars[10];
+            strcpy_s(nameChars, pipes[y][x]->name.c_str());
+            ofs.write(reinterpret_cast<const char*>(&nameChars), sizeof(char) * 10);
+        }
+    }
+    cout << "Game Saved." << endl;
+    return true;
+}
+
+void GameWindow::randomizeGame() {
+    randomPipes();
+    setupPipeBtns();
+}
+
+bool GameWindow::loadGame() {
+    ifstream ifs("Game.dat", ios::in | ios::binary);
+    if (!ifs) return false;
+    removePipes();
+    for (int y = 0; y < 5; y++) {
+        for (int x = 0; x < 5; x++) {
+            char nameChars[10];
+            ifs.read(reinterpret_cast<char*>(&nameChars), sizeof(char) * 10);
+            PipeType t = pipeTypeFromChars(nameChars);
+            pipes[y][x] = customPipeAt(sf::Vector2i(x, y), t);
+            updateConnectionsOf(pipes[y][x]);
+        }
+    }
+    moveWaterToEnd();
+    setupPipeBtns();
+    cout << "Game Loaded." << endl;
+    return true;
 }

@@ -16,13 +16,13 @@ public:
     ~GameWindow();
     WindowType events();
     void render();
-    void backBtnEvents();
+    WindowType btnEvents();
     void updateMousePos();
     void setupPipeBtns();
     void eventsPipeBtns();
     void renderPipeBtns();
     void renderScoreText();
-    //
+//
     bool isValid(int row, int col);
     Pipe* customPipeAt(sf::Vector2i index, PipeType t);
     Pipe* randomPipeAt(sf::Vector2i index);
@@ -39,6 +39,11 @@ public:
     bool recursiveMove(Pipe* p, Direction from);
     bool moveWaterToEnd(); // if player wins returns true
     void rotatePipe(Pipe* p);
+    PipeType pipeTypeFromChars(char chars[10]);
+    bool saveGame();
+    void randomizeGame();
+    bool loadGame();
+
 private:
     const std::string resDir = "res/";
     const std::string gameImg = "Game.png";
@@ -53,9 +58,14 @@ private:
     sf::Vector2f mousePos;
     sf::Music music;
     TextBtn* scoreText;
+    TextBtn* saveBtn;
+    TextBtn* randomizeBtn;
+    TextBtn* loadBtn;
     ImgBtn* pipeBtns[5][5] = { {nullptr} };
+
 //
     int score = 0;
     bool hasWon = false;
-    Pipe* pipes[5][5] = { {nullptr} };  
+    Pipe* pipes[5][5] = { {nullptr} };
+
 };

@@ -13,6 +13,7 @@ public:
     ~MenuWindow();
     WindowType events();
     void render();
+
 private:
     const std::string resDir = "res/";
     const std::string menuImg = "Menu.png";
