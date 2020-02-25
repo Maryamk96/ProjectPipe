@@ -18,9 +18,9 @@ GameWindow::GameWindow(sf::RenderWindow* window) : window(window) {
     texture.loadFromFile(resDir + gameImg);
     sprite.setTexture(texture);
     backBtn = new ImgBtn(10, 10, 75, 75, backImg);
-    scoreText = new TextBtn(350, 20, sf::Color::Black, "", mainFont);
+    scoreText = new TextBtn(0, 0, sf::Color::Black, "", mainFont, 40);
     saveBtn = new TextBtn(20, 730, sf::Color::Black, "Save", mainFont, 35);
-    randomizeBtn = new TextBtn(300, 730, sf::Color::Black, "Randomize", mainFont, 35);
+    randomizeBtn = new TextBtn(300, 730, sf::Color::Black, "New Game", mainFont, 35);
     loadBtn = new TextBtn(670, 730, sf::Color::Black, "Load", mainFont, 35);
     music.openFromFile(resDir + mainMusic);
     music.setLoop(true);
@@ -32,6 +32,9 @@ GameWindow::GameWindow(sf::RenderWindow* window) : window(window) {
 GameWindow::~GameWindow() {
     delete backBtn;
     delete scoreText;
+    delete saveBtn;
+    delete randomizeBtn;
+    delete loadBtn;
 }
 
 WindowType GameWindow::btnEvents() {
@@ -118,10 +121,10 @@ void GameWindow::renderPipeBtns() {
 }
 
 void GameWindow::renderScoreText() {
-    if (hasWon) scoreText->text.setString("A Win With" + to_string(score));
+    if (hasWon) scoreText->text.setString("Won With: " + to_string(score));
     else scoreText->text.setString(to_string(score));
     int x = (window->getSize().x - scoreText->text.getGlobalBounds().width) / 2;
-    scoreText->text.setPosition(x, 20);
+    scoreText->text.setPosition(x, 40);
     scoreText->render(window);
 }
 
@@ -199,12 +202,10 @@ void GameWindow::removePipes() {
 }
 
 void GameWindow::randomizePipes() {
-    int y1, x1;
     for (int y = 0; y < 5; y++) {
         for (int x = 0; x < 5; x++) {
-            y1 = rand() % 5;
-            x1 = rand() % 5;
-            changePlace(pipes[y][x], pipes[y1][x1]);
+            int rotateTimes = rand() % 4; // 0 to 3
+            for (int t = 0; t < rotateTimes; t++) rotatePipe(pipes[y][x]);
         }
     }
 }
@@ -272,22 +273,6 @@ bool GameWindow::isConnectedFromDirection(Direction d, Pipe* p1, Pipe* p2) {
     else if (d == DOWN && p1->hasConnectionInDirection(DOWN) && p2->hasConnectionInDirection(UP)) return true;
     else if (d == LEFT && p1->hasConnectionInDirection(LEFT) && p2->hasConnectionInDirection(RIGHT)) return true;
     else return false;
-}
-
-void GameWindow::changePlace(Pipe* p1, Pipe* p2) {
-    if (!p1 || !p2) return;
-    int r1 = p1->r;
-    int c1 = p1->c;
-    int r2 = p2->r;
-    int c2 = p2->c;
-    pipes[r1][c1] = p2;
-    pipes[r2][c2] = p1;
-    p2->c = c1;
-    p2->r = r1;
-    p1->c = c2;
-    p1->r = r2;
-    updateConnectionsOf(p1);
-    updateConnectionsOf(p2);
 }
 
 bool GameWindow::recursiveMove(Pipe* p, Direction from) {
